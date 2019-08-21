@@ -182,7 +182,7 @@ int main(void)
 
   /* USER CODE BEGIN 2 */
 
-// initialise_monitor_handles();					/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
+ //initialise_monitor_handles();					///-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
 
  HAL_TIM_Base_Start_IT(&htim3);
 
@@ -484,7 +484,7 @@ static void MX_TIM4_Init(void)
 
   /* USER CODE END TIM4_Init 1 */
   htim4.Instance = TIM4;
-  htim4.Init.Prescaler = 16;
+  htim4.Init.Prescaler = 2;
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim4.Init.Period = 100;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -700,12 +700,15 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
-static uint32_t ulIdleCycleCount = 0;   //Zliczanie obiegow petli Idle
+volatile uint32_t ulIdleCycleCount = 0;   //Zliczanie obiegow petli Idle
 
 void vApplicationIdleHook(void){
-
-	 ulIdleCycleCount++;
-
+//
+//	for(;;){
+//
+	ulIdleCycleCount++;
+//
+//	}
 }
 
 /* USER CODE END 4 */
@@ -748,10 +751,16 @@ void Console_service_start(void const * argument)
   for(;;)
   {
 	  float ADC_Voltage = (adc->ADC_Send_Voltage());
-	  uart -> UART_Printf("ADC_Voltage: %.3f    PID_Control: %.3f \n\r", ADC_Voltage,(pid -> PID_Control(2,ADC_Voltage)));
-	  ulIdleCycleCount = 0;
+	  uart -> UART_Printf("ADC_Voltage: %.3f \n\r", ADC_Voltage);
 
-	  osDelay(100);
+
+	 // printf("Idle data: \n\r%s\n\r", temp);
+	  //printf("Idle: %lu \n\r" ,ulIdleCycleCount);
+	 // printf("Out Voltage: %lu \n\r",ADC_Voltage);
+	 // ulIdleCycleCount = 0;
+	  HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
+
+	  osDelay(1000);
 
 
   }
@@ -769,6 +778,7 @@ void ADC_service_start(void const * argument)
 {
   /* USER CODE BEGIN ADC_service_start */
   /* Infinite loop */
+
 
 		adc -> ADC_Send_PWM();
 

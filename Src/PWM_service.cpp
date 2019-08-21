@@ -31,7 +31,7 @@ uint32_t PWMConf::Convert_To_PWM(uint32_t value){
 void PWMConf::Set_Out(uint32_t value){
 
 	uint32_t PWM_Value = Convert_To_PWM(value);
-	tim->Instance->CCR3 = PWM_Value;
+	tim->Instance->CCR3 = 20;
 
 }
 

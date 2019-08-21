@@ -21,25 +21,6 @@ PID::~PID(){
 
 }
 
-/*
-void PIDConf::Error_fun(uint16_t Set_Voltage, float Voltage){
-
-	Error = (Set_Voltage - Voltage);
-
-}
-
-void PIDConf::Proportional_fun(){
-
-	Proportional = Kp*Error;
-
-}
-
-void PIDConf::Integral_fun(){
-
-
-}
-
-*/
 
 float PID::PID_Control(uint16_t Set_Voltage, float Voltage){
 

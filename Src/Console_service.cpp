@@ -118,8 +118,6 @@ void UartCom::UART_Class_RUN(){
 void UartCom::UART_Printf(const char* Txt, float Value1, float Value2){
 
 
-
-
 	static uint8_t data[50];
 	uint16_t size = 0;
 
@@ -130,6 +128,17 @@ void UartCom::UART_Printf(const char* Txt, float Value1, float Value2){
 }
 
 void UartCom::UART_Printf(const char* Txt, float Value1){
+
+
+	//va_list arg;
+	//float tmp = Value1;
+	//va_start(arg,Value1);
+
+	//while(tmp != 0){
+
+
+
+	//}
 
 
 

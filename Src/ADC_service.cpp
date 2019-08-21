@@ -51,7 +51,7 @@ void ADCConf::ADC_Get(){
 float ADCConf::Convert_To_Voltage(){
 
 
-	float Voltage_ADC = (((float)ADC_Value/Max_Bit_Value)*Vcc_Voltage);
+	float Voltage_ADC = (3.07) * (((float)ADC_Value/Max_Bit_Value)*Vcc_Voltage);
 	return Voltage_ADC;
 
 }
