@@ -30,7 +30,7 @@ public:
 	void ADC_Get();
 	void Change_PWM();
 	float ADC_Send_Voltage();
-	void ADC_Send_PWM();
+	void ADC_Send_PWM(uint32_t);
 
 
 private:

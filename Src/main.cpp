@@ -29,6 +29,7 @@
 #include "usbd_cdc_if.h" // Plik bedacy interfejsem uzytkownika do kontrolera USB
 #include "string.h"
 #include "queue.h"
+#include <cmath>
 #include "PWM_service.hpp"
 #include "ADC_service.hpp"
 #include "Console_service.hpp"
@@ -77,7 +78,9 @@ osMessageQId Console_RxHandle;
 
 uint8_t ReceivedData; // Tablica przechowujaca odebrane dane
 uint8_t Data_To_Send[50];
-uint16_t size = 0;
+uint16_t cnt = 0;
+uint32_t PID_UART;
+float ADC_UART;
 
 
 /* Deklaracja objektow -------------------------------------------------------*/
@@ -85,7 +88,7 @@ uint16_t size = 0;
 AnalogOutInterface* pwm = new PWMConf(&htim4);
 ADCConf* adc = new ADCConf(pwm);
 UartCom* uart = new UartCom(13);
-PID* pid = new PID(1,1000,-1000,10,30,10);
+PID* pid = new PID(0.001,40,0,1,50,0);
 
 /* USER CODE END PV */
 
@@ -218,7 +221,7 @@ int main(void)
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityIdle, 0, 256);
+  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 256);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* definition and creation of Console_service */
@@ -729,7 +732,12 @@ void StartDefaultTask(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(100);
+
+	  uart -> UART_Printf("ADC_Voltage: %.3f  PID_Control %.3f \n\r", ADC_UART,PID_UART);
+
+	  HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
+
+	  osDelay(1000);
 
   }
   /* USER CODE END 5 */ 
@@ -750,17 +758,19 @@ void Console_service_start(void const * argument)
 
   for(;;)
   {
-	  float ADC_Voltage = (adc->ADC_Send_Voltage());
-	  uart -> UART_Printf("ADC_Voltage: %.3f \n\r", ADC_Voltage);
+	  //static float ADC_Voltage = (adc -> ADC_Send_Voltage());
 
+
+	  osDelay(100);
 
 	 // printf("Idle data: \n\r%s\n\r", temp);
 	  //printf("Idle: %lu \n\r" ,ulIdleCycleCount);
 	 // printf("Out Voltage: %lu \n\r",ADC_Voltage);
 	 // ulIdleCycleCount = 0;
-	  HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
 
-	  osDelay(1000);
+
+
+
 
 
   }
@@ -779,10 +789,18 @@ void ADC_service_start(void const * argument)
   /* USER CODE BEGIN ADC_service_start */
   /* Infinite loop */
 
+	for(;;){
 
-		adc -> ADC_Send_PWM();
 
+	 ADC_UART = (adc -> ADC_Send_Voltage());
 
+	 PID_UART = round((pid -> PID_Control(5,ADC_UART)));
+
+	 adc -> ADC_Send_PWM(PID_UART);
+
+	 osDelay(1);
+
+	}
 
 }
   /* USER CODE END ADC_service_start */

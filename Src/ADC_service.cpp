@@ -66,14 +66,14 @@ float ADCConf::ADC_Send_Voltage(){
 }
 
 
-void ADCConf::ADC_Send_PWM(){
+void ADCConf::ADC_Send_PWM(uint32_t Value){
 
-	 for(;;)
-	  {
+	// for(;;)
+	 // {
 		ADC_Get();
-		wsk -> Set_Out(ADC_Value);
+		wsk -> Set_Out(Value);
 
-	  }
+	//  }
 
 
 

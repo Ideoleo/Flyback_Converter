@@ -7,12 +7,13 @@
 
 #include "PID_service.hpp"
 
-float PIDControl;
+float PIDControl = 1;
 uint8_t Set_VoltageME;
 
-PID::PID(float time_,float max_,float min_, uint8_t Kp_, uint8_t Ki_, uint8_t Kd_)
+PID::PID(float time_,float max_,float min_, float Kp_, float Ki_, float Kd_)
 :time(time_),max(max_),min(min_),Kp(Kp_),Ki(Ki_),Kd(Kd_){
 
+	ErrorSum = 0;
 
 }
 
@@ -22,17 +23,23 @@ PID::~PID(){
 }
 
 
-float PID::PID_Control(uint16_t Set_Voltage, float Voltage){
+float PID::PID_Control(float Set_Voltage, float Voltage){
 
-	Set_VoltageME = 2;
+	Set_VoltageME = 5;
 	float Error = (Set_Voltage - Voltage);
+	//float Error = 1;
 
 	//------------P--------------//
 	Proportional = Kp * Error;
 
 	//------------I--------------//
-	ErrorSum = (ErrorSum + Error)*time;
+
+	if((PIDControl > min) && (PIDControl < max)){
+
+	ErrorSum = ErrorSum + (Error*time);
 	Integral = Ki * ErrorSum;
+
+	}
 
 	//------------D-------------//
 	Derivative = Kd * ((Error - PreError)/time);

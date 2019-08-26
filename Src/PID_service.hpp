@@ -13,14 +13,14 @@ class PID{
 
 public:
 
-	PID(float time_,float max_,float min_, uint8_t Kp_, uint8_t Ki_, uint8_t Kd_);
+	PID(float time_,float max_,float min_, float Kp_, float Ki_, float Kd_);
 	~PID();
 
 	void Proportional_fun();
 	void Error_fun(float);
 	void Integral_fun();
 	void Derivative_fun();
-	float PID_Control(uint16_t Set_Voltage, float Voltage);
+	float PID_Control(float Set_Voltage, float Voltage);
 
 
 private:
@@ -29,7 +29,7 @@ private:
 	float time;
 	float max;
 	float min;
-	uint8_t Kp, Ki, Kd;
+	float Kp, Ki, Kd;
 	float Proportional,Integral,Derivative;
 	float PreError;
 	double ErrorSum;
