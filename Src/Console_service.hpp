@@ -13,22 +13,28 @@
 #include <cstring>
 #include <vector>
 #include "cmsis_os.h"
+#include "main.h"
+#include "Command_Interface.hpp"
+#include "PWM_service.hpp"
+#include <map>
+#include <utility>
 
 
 class UartCom{
 
 public:
 
-	UartCom(uint8_t Enter_);
+	UartCom(uint8_t Enter_,const std::map<string,CommandInterface*>&);
 	~UartCom();
 
 	void UART_Rec_Sign(uint8_t Data_RC);
 	void UART_Build_String();
 	std::vector<std::string> UART_Tok(char* MEMDataToSend,const char* const StrFind);
 	void UART_Class_VPRINT(std::vector<std::string> vdata);
-	void UART_Class_RUN();
 	void UART_Printf(const char* Txt, float Value1, float Value2);
 	void UART_Printf(const char* Txt, float Value1);
+	void UART_Printf(const char* Txt, char* str);
+	void UART_Interface();
 
 private:
 
@@ -37,6 +43,8 @@ private:
 	uint8_t i;
 	const uint8_t Enter;
 	osMessageQId Console_Rx_Handle;
+	std::map<std::string,CommandInterface*> Command_map;
+	std::map<string,CommandInterface*>::iterator it;
 
 
 };

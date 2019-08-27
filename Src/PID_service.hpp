@@ -8,12 +8,13 @@
 #ifndef PID_SERVICE_HPP_
 #define PID_SERVICE_HPP_
 #include <cstdint>
+#include <cstdio>
 
 class PID{
 
 public:
 
-	PID(float time_,float max_,float min_, float Kp_, float Ki_, float Kd_);
+	PID(float time_, float Kp_, float Ki_, float Kd_);
 	~PID();
 
 	void Proportional_fun();
@@ -21,6 +22,7 @@ public:
 	void Integral_fun();
 	void Derivative_fun();
 	float PID_Control(float Set_Voltage, float Voltage);
+	void PID_Set(float,float,float,float,float);
 
 
 private:

@@ -34,6 +34,7 @@
 #include "ADC_service.hpp"
 #include "Console_service.hpp"
 #include "PID_service.hpp"
+#include "Set_P.hpp"
 
 
 /* USER CODE END Includes */
@@ -87,8 +88,9 @@ float ADC_UART;
 
 AnalogOutInterface* pwm = new PWMConf(&htim4);
 ADCConf* adc = new ADCConf(pwm);
-UartCom* uart = new UartCom(13);
-PID* pid = new PID(0.001,40,0,1,50,0);
+UartCom* uart = NULL;
+PID* pid = new PID(0.001,1,50,0);
+
 
 /* USER CODE END PV */
 
@@ -129,7 +131,7 @@ int PWM_Change();
 
  void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
-	 UART_Class_RC(ReceivedData);
+	 uart -> UART_Rec_Sign(ReceivedData);
 	 HAL_UART_Receive_IT(&huart3, &ReceivedData, 1);
 
  }
@@ -152,6 +154,11 @@ int PWM_Change();
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+
+
+	std::map<string,CommandInterface*> Command_map;
+	Command_map.insert(std::pair<string,CommandInterface*>("SetP",new SetP(pid)));
+	uart = new UartCom(13,Command_map);
 
   /* USER CODE END 1 */
   
@@ -185,7 +192,7 @@ int main(void)
 
   /* USER CODE BEGIN 2 */
 
- //initialise_monitor_handles();					///-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
+ initialise_monitor_handles();					///-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
 
  HAL_TIM_Base_Start_IT(&htim3);
 
@@ -733,8 +740,6 @@ void StartDefaultTask(void const * argument)
   for(;;)
   {
 
-	  uart -> UART_Printf("ADC_Voltage: %.3f  PID_Control %.3f \n\r", ADC_UART,PID_UART);
-
 	  HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
 
 	  osDelay(1000);
@@ -758,18 +763,10 @@ void Console_service_start(void const * argument)
 
   for(;;)
   {
-	  //static float ADC_Voltage = (adc -> ADC_Send_Voltage());
 
+	  uart -> UART_Interface();
 
-	  osDelay(100);
-
-	 // printf("Idle data: \n\r%s\n\r", temp);
-	  //printf("Idle: %lu \n\r" ,ulIdleCycleCount);
-	 // printf("Out Voltage: %lu \n\r",ADC_Voltage);
-	 // ulIdleCycleCount = 0;
-
-
-
+	  osDelay(1);
 
 
 
@@ -794,7 +791,7 @@ void ADC_service_start(void const * argument)
 
 	 ADC_UART = (adc -> ADC_Send_Voltage());
 
-	 PID_UART = round((pid -> PID_Control(5,ADC_UART)));
+	 PID_UART = round((pid -> PID_Control(3.3,ADC_UART)));
 
 	 adc -> ADC_Send_PWM(PID_UART);
 

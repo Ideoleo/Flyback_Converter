@@ -1,27 +1,22 @@
 #include "Console_service.hpp"
-#include "PWM_service.hpp"
-#include "cmsis_os.h"
-#include "main.h"
-#include <fstream>
-#include <cstdint>
-#include <cstdio>
-#include <cstring>
-#include <vector>
 #include <cstdarg>
+#include "Set_P.hpp"
 using namespace std;
 
 
-UartCom Object1(13); //13 - znak entera w ASCII
+
 
 extern UART_HandleTypeDef huart3;
 
-UartCom::UartCom(uint8_t Enter_)	//Konstruktor
-:Enter(Enter_)
+UartCom::UartCom(uint8_t Enter_, const std::map<string,CommandInterface*>& Command_map)	//Konstruktor
+:Enter(Enter_),Command_map(Command_map)
 {
 	i = 0;
 
 	osMessageQDef(Console_Rx, 16, uint32_t);
 	Console_Rx_Handle = osMessageCreate(osMessageQ(Console_Rx), NULL);
+
+
 
 }
 
@@ -31,7 +26,6 @@ UartCom::~UartCom(){				//Destruktor
 
 
 void UartCom::UART_Rec_Sign(uint8_t RC_Data){
-
 
 	osMessagePut(Console_Rx_Handle, RC_Data, 0);
 
@@ -55,8 +49,23 @@ void UartCom::UART_Build_String(){
 
 			 i = 0;
 
-			vec_data = Object1.UART_Tok(DataToSend, " ");	//podziel na tokeny
-			Object1.UART_Class_VPRINT(vec_data);			//wypisz wektor
+			vec_data = UART_Tok(DataToSend, " ");	//podziel na tokeny
+			//UART_Class_VPRINT(vec_data);			//wypisz wektor
+
+			if(vec_data.size() > 0){
+
+					it = Command_map.find(vec_data[0]);
+
+					if(it != Command_map.end()){
+
+
+						string Output = it->second->Execute(vec_data);
+						UART_Printf(" %s \n\r", Output.c_str());
+					}
+
+
+				}
+
 
 		 }
 
@@ -66,8 +75,6 @@ void UartCom::UART_Build_String(){
 			 i++;
 
 		 }
-
-
 
 
 }
@@ -96,14 +103,14 @@ void UartCom::UART_Class_VPRINT(std::vector<std::string> vdata){
 
 	for(unsigned int i = 0; i < vdata.size(); i++){
 
-			printf("%s \n\r",vdata[i].c_str());
+			UART_Printf("%s \n\r",vdata[i].c_str());
 
 		}
 
 }
 
-void UartCom::UART_Class_RUN(){
 
+void UartCom::UART_Interface(){
 
 	while(1){
 
@@ -111,8 +118,8 @@ void UartCom::UART_Class_RUN(){
 
 	}
 
-}
 
+}
 
 
 void UartCom::UART_Printf(const char* Txt, float Value1, float Value2){
@@ -123,22 +130,11 @@ void UartCom::UART_Printf(const char* Txt, float Value1, float Value2){
 
 
 	size = sprintf(data,Txt,Value1,Value2);
-	HAL_UART_Transmit_IT(&huart3, data, size);
+	HAL_UART_Transmit(&huart3, data, size, HAL_MAX_DELAY);
 
 }
 
 void UartCom::UART_Printf(const char* Txt, float Value1){
-
-
-	//va_list arg;
-	//float tmp = Value1;
-	//va_start(arg,Value1);
-
-	//while(tmp != 0){
-
-
-
-	//}
 
 
 
@@ -147,20 +143,20 @@ void UartCom::UART_Printf(const char* Txt, float Value1){
 
 
 	size = sprintf(data,Txt,Value1);
-	HAL_UART_Transmit_IT(&huart3, data, size);
+	HAL_UART_Transmit(&huart3, data, size, HAL_MAX_DELAY);
+
+}
+
+void UartCom::UART_Printf(const char* Txt, char* str){
+
+
+	static uint8_t data[50];
+	uint16_t size = 0;
+
+
+	size = sprintf(data,Txt,str);
+	HAL_UART_Transmit(&huart3, data, size, HAL_MAX_DELAY);
 
 }
 
 
-
-void UART_Class_RC(uint8_t RC_Data){
-
-	Object1.UART_Rec_Sign(RC_Data);
-
-}
-
-void UART_Class_RUN(void const* param){
-
-	Object1.UART_Class_RUN();
-
-}

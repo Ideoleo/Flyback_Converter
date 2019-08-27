@@ -10,10 +10,13 @@
 float PIDControl = 1;
 uint8_t Set_VoltageME;
 
-PID::PID(float time_,float max_,float min_, float Kp_, float Ki_, float Kd_)
-:time(time_),max(max_),min(min_),Kp(Kp_),Ki(Ki_),Kd(Kd_){
+PID::PID(float time_, float Kp_, float Ki_, float Kd_)
+:time(time_),Kp(Kp_),Ki(Ki_),Kd(Kd_){
 
 	ErrorSum = 0;
+	max = 50;
+	min = 0;
+
 
 }
 
@@ -27,7 +30,7 @@ float PID::PID_Control(float Set_Voltage, float Voltage){
 
 	Set_VoltageME = 5;
 	float Error = (Set_Voltage - Voltage);
-	//float Error = 1;
+
 
 	//------------P--------------//
 	Proportional = Kp * Error;
@@ -58,6 +61,16 @@ float PID::PID_Control(float Set_Voltage, float Voltage){
 
 }
 
+void PID::PID_Set(float Set_Voltage,float Kup, float Kui, float Kud, float time_in){
+
+	Kp = Kup;
+	Ki = Kui;
+	Kd = Kud;
+	time = time_in;
+
+	printf("Kp: %lu Ki: %lu Kd: %lu \n\r",Kp,Ki,Kd);
+
+}
 
 
 
