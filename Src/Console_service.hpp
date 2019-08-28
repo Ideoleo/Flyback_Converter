@@ -33,12 +33,13 @@ public:
 	void UART_Class_VPRINT(std::vector<std::string> vdata);
 	void UART_Printf(const char* Txt, float Value1, float Value2);
 	void UART_Printf(const char* Txt, float Value1);
-	void UART_Printf(const char* Txt, char* str);
+	void UART_Printf(const char* Txt, const char* str);
+	void UART_Printf(const char* Txt);
 	void UART_Interface();
 
 private:
 
-	char DataToSend[128];
+	char DataToSend[256];
 	char MEMDataToSend[128];
 	uint8_t i;
 	const uint8_t Enter;

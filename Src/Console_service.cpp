@@ -34,8 +34,11 @@ void UartCom::UART_Rec_Sign(uint8_t RC_Data){
 void UartCom::UART_Build_String(){
 
 
+	//UART_Printf("Hey, you can set Flyback controler values here!\n\rTo set parameters please put 'SetP' and then parameters in the following order \n\rSet Voltage | Kp | Ki | Kd |\n\r");
+
 	osEvent evt;
 	uint32_t Uart_rec_value;
+
 
 	evt = osMessageGet(Console_Rx_Handle, osWaitForever);
 	Uart_rec_value = evt.value.v;
@@ -50,7 +53,6 @@ void UartCom::UART_Build_String(){
 			 i = 0;
 
 			vec_data = UART_Tok(DataToSend, " ");	//podziel na tokeny
-			//UART_Class_VPRINT(vec_data);			//wypisz wektor
 
 			if(vec_data.size() > 0){
 
@@ -58,9 +60,8 @@ void UartCom::UART_Build_String(){
 
 					if(it != Command_map.end()){
 
-
 						string Output = it->second->Execute(vec_data);
-						UART_Printf(" %s \n\r", Output.c_str());
+
 					}
 
 
@@ -72,6 +73,7 @@ void UartCom::UART_Build_String(){
 		 else{
 
 			 DataToSend[i] = Uart_rec_value;		//wpisz kolejne znaki do bufora
+			 HAL_UART_Transmit(&huart3, reinterpret_cast<uint8_t*>(&DataToSend[i]), 1, HAL_MAX_DELAY); // Console Echo
 			 i++;
 
 		 }
@@ -129,7 +131,7 @@ void UartCom::UART_Printf(const char* Txt, float Value1, float Value2){
 	uint16_t size = 0;
 
 
-	size = sprintf(data,Txt,Value1,Value2);
+	size = sprintf(reinterpret_cast<char*>(data),Txt,Value1,Value2);
 	HAL_UART_Transmit(&huart3, data, size, HAL_MAX_DELAY);
 
 }
@@ -142,21 +144,34 @@ void UartCom::UART_Printf(const char* Txt, float Value1){
 	uint16_t size = 0;
 
 
-	size = sprintf(data,Txt,Value1);
+	size = sprintf(reinterpret_cast<char*>(data),Txt,Value1);
 	HAL_UART_Transmit(&huart3, data, size, HAL_MAX_DELAY);
 
 }
 
-void UartCom::UART_Printf(const char* Txt, char* str){
+void UartCom::UART_Printf(const char* Txt, const char* str){
 
 
 	static uint8_t data[50];
 	uint16_t size = 0;
 
 
-	size = sprintf(data,Txt,str);
+	size = sprintf(reinterpret_cast<char*>(data),Txt,str);
 	HAL_UART_Transmit(&huart3, data, size, HAL_MAX_DELAY);
 
 }
+
+void UartCom::UART_Printf(const char* Txt){
+
+
+	static uint8_t data[100];
+	uint16_t size = 0;
+
+
+	size = sprintf(reinterpret_cast<char*>(data),Txt);
+	HAL_UART_Transmit(&huart3, data, size, HAL_MAX_DELAY);
+
+}
+
 
 

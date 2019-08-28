@@ -68,8 +68,6 @@ void PID::PID_Set(float Set_Voltage,float Kup, float Kui, float Kud, float time_
 	Kd = Kud;
 	time = time_in;
 
-	printf("Kp: %lu Ki: %lu Kd: %lu \n\r",Kp,Ki,Kd);
-
 }
 
 
