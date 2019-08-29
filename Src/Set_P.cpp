@@ -28,9 +28,10 @@ std::string SetP::Execute(const std::vector<std::string>& vdata){
 	Kp = stof(vdata[2]);
 	Ki = stof(vdata[3]);
 	Kd = stof(vdata[4]);
-	Time = stof(vdata[5]);
 
-	p_pid -> PID_Set(SetVoltage, Kp, Ki, Kd, Time);
+	printf("\n\n\rSet Voltage: %.2f\n\rKp: %.2f\n\rKi: %.2f\n\rKd: %.2f\n\r",SetVoltage,Kp,Ki,Kd);
+	printf("\n\r");
+	p_pid -> PID_Set(SetVoltage, Kp, Ki, Kd);
 
-
+	return std::string("");
 }

@@ -21,8 +21,8 @@ public:
 	void Error_fun(float);
 	void Integral_fun();
 	void Derivative_fun();
-	float PID_Control(float Set_Voltage, float Voltage);
-	void PID_Set(float,float,float,float,float);
+	float PID_Control(float Voltage);
+	void PID_Set(float,float,float,float);
 
 
 private:
@@ -34,6 +34,7 @@ private:
 	float Kp, Ki, Kd;
 	float Proportional,Integral,Derivative;
 	float PreError;
+	float Set_Voltage;
 	double ErrorSum;
 
 };

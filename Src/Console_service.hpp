@@ -29,7 +29,7 @@ public:
 
 	void UART_Rec_Sign(uint8_t Data_RC);
 	void UART_Build_String();
-	std::vector<std::string> UART_Tok(char* MEMDataToSend,const char* const StrFind);
+	std::vector<std::string>* UART_Tok(char* MEMDataToSend,const char* const StrFind);
 	void UART_Class_VPRINT(std::vector<std::string> vdata);
 	void UART_Printf(const char* Txt, float Value1, float Value2);
 	void UART_Printf(const char* Txt, float Value1);

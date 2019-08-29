@@ -34,8 +34,6 @@ void UartCom::UART_Rec_Sign(uint8_t RC_Data){
 void UartCom::UART_Build_String(){
 
 
-	//UART_Printf("Hey, you can set Flyback controler values here!\n\rTo set parameters please put 'SetP' and then parameters in the following order \n\rSet Voltage | Kp | Ki | Kd |\n\r");
-
 	osEvent evt;
 	uint32_t Uart_rec_value;
 
@@ -46,7 +44,7 @@ void UartCom::UART_Build_String(){
 
 	 if (Uart_rec_value == Enter){
 
-			 std::vector<std::string> vec_data;		//wektor dla tokenow
+			 std::vector<std::string>* vec_data;		//wektor dla tokenow
 
 			 DataToSend[i] = 0;
 
@@ -54,25 +52,32 @@ void UartCom::UART_Build_String(){
 
 			vec_data = UART_Tok(DataToSend, " ");	//podziel na tokeny
 
-			if(vec_data.size() > 0){
+			if(vec_data->size() > 0){
 
-					it = Command_map.find(vec_data[0]);
+					it = Command_map.find((*vec_data)[0]);
 
 					if(it != Command_map.end()){
 
-						string Output = it->second->Execute(vec_data);
+						string Output = it->second->Execute(*vec_data);
+
+					}
+					else{
+
+						printf("\n\rCannot find this function\n\r");
+						printf("\n\r");
 
 					}
 
 
 				}
 
-
+			delete vec_data;
 		 }
 
 		 else{
 
 			 DataToSend[i] = Uart_rec_value;		//wpisz kolejne znaki do bufora
+			 //printf("%d",1);
 			 HAL_UART_Transmit(&huart3, reinterpret_cast<uint8_t*>(&DataToSend[i]), 1, HAL_MAX_DELAY); // Console Echo
 			 i++;
 
@@ -81,17 +86,18 @@ void UartCom::UART_Build_String(){
 
 }
 
-std::vector<std::string> UartCom::UART_Tok(char* MEMDataToSend, const char* const StrFind){
+std::vector<std::string>* UartCom::UART_Tok(char* MEMDataToSend, const char* const StrFind){
 
-	std::vector<std::string> vdata;
+	std::vector<std::string>* vdata = new std::vector<std::string>;
 	char *WordToFind;
 	WordToFind = strtok(MEMDataToSend,StrFind);
 
 
 	while(WordToFind != NULL){
-
-		string temp(WordToFind);
-		vdata.push_back (temp);
+		char* test = new char[10];
+		delete[] test;
+		string temp(WordToFind,4);
+		vdata->push_back (temp);
 		WordToFind = strtok(NULL,StrFind);
 
 	}
@@ -164,7 +170,7 @@ void UartCom::UART_Printf(const char* Txt, const char* str){
 void UartCom::UART_Printf(const char* Txt){
 
 
-	static uint8_t data[100];
+	static uint8_t data[150];
 	uint16_t size = 0;
 
 
