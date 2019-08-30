@@ -36,6 +36,7 @@ public:
 	void UART_Printf(const char* Txt, const char* str);
 	void UART_Printf(const char* Txt);
 	void UART_Interface();
+	void String_From_Func();
 
 private:
 
@@ -46,6 +47,7 @@ private:
 	osMessageQId Console_Rx_Handle;
 	std::map<std::string,CommandInterface*> Command_map;
 	std::map<string,CommandInterface*>::iterator it;
+	std::string Output;
 
 
 };

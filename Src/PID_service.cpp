@@ -15,7 +15,7 @@ PID::PID(float time_, float Kp_, float Ki_, float Kd_)
 
 	Set_Voltage = 4.6;
 	ErrorSum = 0;
-	max = 50;
+	max = 60;
 	min = 0;
 
 

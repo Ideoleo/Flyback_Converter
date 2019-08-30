@@ -17,7 +17,6 @@ UartCom::UartCom(uint8_t Enter_, const std::map<string,CommandInterface*>& Comma
 	Console_Rx_Handle = osMessageCreate(osMessageQ(Console_Rx), NULL);
 
 
-
 }
 
 UartCom::~UartCom(){				//Destruktor
@@ -54,11 +53,14 @@ void UartCom::UART_Build_String(){
 
 			if(vec_data->size() > 0){
 
+
 					it = Command_map.find((*vec_data)[0]);
 
 					if(it != Command_map.end()){
 
-						string Output = it->second->Execute(*vec_data);
+							Output = it->second->Execute(*vec_data);
+
+
 
 					}
 					else{
@@ -69,6 +71,7 @@ void UartCom::UART_Build_String(){
 					}
 
 
+
 				}
 
 			delete vec_data;
@@ -77,11 +80,17 @@ void UartCom::UART_Build_String(){
 		 else{
 
 			 DataToSend[i] = Uart_rec_value;		//wpisz kolejne znaki do bufora
-			 //printf("%d",1);
 			 HAL_UART_Transmit(&huart3, reinterpret_cast<uint8_t*>(&DataToSend[i]), 1, HAL_MAX_DELAY); // Console Echo
 			 i++;
 
 		 }
+
+
+}
+
+void String_From_Func(){
+
+
 
 
 }
