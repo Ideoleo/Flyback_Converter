@@ -46,13 +46,13 @@
 
 
 
-#ifdef __GNUC__
-  /* With GCC, small printf (option LD Linker->Libraries->Small printf
-     set to 'Yes') calls __io_putchar() */
-  #define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
-#else
-  #define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
-#endif /* __GNUC__ */
+//#ifdef __GNUC__
+//  /* With GCC, small printf (option LD Linker->Libraries->Small printf
+//     set to 'Yes') calls __io_putchar() */
+//  #define PUTCHAR_PROTOTYPE int io_putchar(int ch)
+//#else
+//  #define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+//#endif /* __GNUC__ */
 
 
 
@@ -104,6 +104,7 @@ AnalogOutInterface* pwm = new PWMConf(&htim4);
 ADCConf* adc = new ADCConf(pwm);
 UartCom* uart = NULL;
 PID* pid = new PID(0.001,1,50,0);
+std::map<string,CommandInterface*>* Command_map;
 
 
 /* USER CODE END PV */
@@ -146,7 +147,7 @@ int PWM_Change();
  void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
 	 uart -> UART_Rec_Sign(ReceivedData);
-	 HAL_UART_Receive_IT(&huart3, &ReceivedData, 1);
+	 HAL_UART_Receive_IT(&huart2, &ReceivedData, 1);
 
  }
 
@@ -170,11 +171,11 @@ int main(void)
   /* USER CODE BEGIN 1 */
 
 
-	std::map<string,CommandInterface*> Command_map;
-	Command_map.insert(std::pair<string,CommandInterface*>("SetP",new SetP(pid)));
-	uart = new UartCom(13,Command_map);
+	Command_map = new std::map<string,CommandInterface*>;
+	Command_map->insert(std::pair<string,CommandInterface*>("SetP",new SetP(pid)));
+	uart = new UartCom(13,*Command_map);
 
-	//uart -> UART_Printf("Hey, you can set Flyback controler values here!\n\r To set parameters please put 'SetP' and then parameters in the following order \n\r  Set Voltage | Kp | Ki | Kd |\n\r");
+
 
   /* USER CODE END 1 */
   
@@ -216,8 +217,7 @@ int main(void)
 
  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3);
 
- HAL_UART_Receive_IT(&huart3, &ReceivedData, 1);
-
+ HAL_UART_Receive_IT(&huart2, &ReceivedData, 1);
 
 
   /* USER CODE END 2 */
@@ -728,11 +728,11 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
-PUTCHAR_PROTOTYPE
+extern "C" int putCharacter(char ch)
 {
   /* Place your implementation of fputc here */
   /* e.g. write a character to the EVAL_COM1 and Loop until the end of transmission */
-  HAL_UART_Transmit(&huart3, (uint8_t *)&ch, 1, 0xFFFF);
+  HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, 0xFFFF);
 
   return ch;
 }
@@ -768,8 +768,6 @@ void StartDefaultTask(void const * argument)
   {
 
 	  HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
-
-	 printf("Hello_world");
 
 	  osDelay(1000);
 
@@ -817,7 +815,7 @@ void ADC_service_start(void const * argument)
 
 	 ADC_UART = (adc -> ADC_Send_Voltage());
 
-	 PID_UART = round((pid -> PID_Control(3.3,ADC_UART)));
+	 PID_UART = round((pid -> PID_Control(ADC_UART)));
 
 	 adc -> ADC_Send_PWM(PID_UART);
 

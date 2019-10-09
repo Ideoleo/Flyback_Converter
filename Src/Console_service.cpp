@@ -6,7 +6,7 @@ using namespace std;
 
 
 
-extern UART_HandleTypeDef huart3;
+extern UART_HandleTypeDef huart2;
 
 UartCom::UartCom(uint8_t Enter_, const std::map<string,CommandInterface*>& Command_map)	//Konstruktor
 :Enter(Enter_),Command_map(Command_map)
@@ -15,7 +15,6 @@ UartCom::UartCom(uint8_t Enter_, const std::map<string,CommandInterface*>& Comma
 
 	osMessageQDef(Console_Rx, 16, uint32_t);
 	Console_Rx_Handle = osMessageCreate(osMessageQ(Console_Rx), NULL);
-
 
 
 }
@@ -34,8 +33,6 @@ void UartCom::UART_Rec_Sign(uint8_t RC_Data){
 void UartCom::UART_Build_String(){
 
 
-	//UART_Printf("Hey, you can set Flyback controler values here!\n\rTo set parameters please put 'SetP' and then parameters in the following order \n\rSet Voltage | Kp | Ki | Kd |\n\r");
-
 	osEvent evt;
 	uint32_t Uart_rec_value;
 
@@ -46,7 +43,7 @@ void UartCom::UART_Build_String(){
 
 	 if (Uart_rec_value == Enter){
 
-			 std::vector<std::string> vec_data;		//wektor dla tokenow
+			 std::vector<std::string>* vec_data;		//wektor dla tokenow
 
 			 DataToSend[i] = 0;
 
@@ -54,26 +51,36 @@ void UartCom::UART_Build_String(){
 
 			vec_data = UART_Tok(DataToSend, " ");	//podziel na tokeny
 
-			if(vec_data.size() > 0){
+			if(vec_data->size() > 0){
 
-					it = Command_map.find(vec_data[0]);
+
+					it = Command_map.find((*vec_data)[0]);
 
 					if(it != Command_map.end()){
 
-						string Output = it->second->Execute(vec_data);
+							Output = it->second->Execute(*vec_data);
+
+
+
+					}
+					else{
+
+						printf("\n\rCannot find this function\n\r");
+						printf("\n\r");
 
 					}
 
 
+
 				}
 
-
+			delete vec_data;
 		 }
 
 		 else{
 
 			 DataToSend[i] = Uart_rec_value;		//wpisz kolejne znaki do bufora
-			 HAL_UART_Transmit(&huart3, reinterpret_cast<uint8_t*>(&DataToSend[i]), 1, HAL_MAX_DELAY); // Console Echo
+			 HAL_UART_Transmit(&huart2, reinterpret_cast<uint8_t*>(&DataToSend[i]), 1, HAL_MAX_DELAY); // Console Echo
 			 i++;
 
 		 }
@@ -81,17 +88,24 @@ void UartCom::UART_Build_String(){
 
 }
 
-std::vector<std::string> UartCom::UART_Tok(char* MEMDataToSend, const char* const StrFind){
+void String_From_Func(){
 
-	std::vector<std::string> vdata;
+
+
+
+}
+
+std::vector<std::string>* UartCom::UART_Tok(char* MEMDataToSend, const char* const StrFind){
+
+	std::vector<std::string>* vdata = new std::vector<std::string>;
 	char *WordToFind;
 	WordToFind = strtok(MEMDataToSend,StrFind);
 
 
 	while(WordToFind != NULL){
 
-		string temp(WordToFind);
-		vdata.push_back (temp);
+		string temp(WordToFind,4);
+		vdata->push_back (temp);
 		WordToFind = strtok(NULL,StrFind);
 
 	}
@@ -132,7 +146,7 @@ void UartCom::UART_Printf(const char* Txt, float Value1, float Value2){
 
 
 	size = sprintf(reinterpret_cast<char*>(data),Txt,Value1,Value2);
-	HAL_UART_Transmit(&huart3, data, size, HAL_MAX_DELAY);
+	HAL_UART_Transmit(&huart2, data, size, HAL_MAX_DELAY);
 
 }
 
@@ -145,7 +159,7 @@ void UartCom::UART_Printf(const char* Txt, float Value1){
 
 
 	size = sprintf(reinterpret_cast<char*>(data),Txt,Value1);
-	HAL_UART_Transmit(&huart3, data, size, HAL_MAX_DELAY);
+	HAL_UART_Transmit(&huart2, data, size, HAL_MAX_DELAY);
 
 }
 
@@ -157,19 +171,19 @@ void UartCom::UART_Printf(const char* Txt, const char* str){
 
 
 	size = sprintf(reinterpret_cast<char*>(data),Txt,str);
-	HAL_UART_Transmit(&huart3, data, size, HAL_MAX_DELAY);
+	HAL_UART_Transmit(&huart2, data, size, HAL_MAX_DELAY);
 
 }
 
 void UartCom::UART_Printf(const char* Txt){
 
 
-	static uint8_t data[100];
+	static uint8_t data[150];
 	uint16_t size = 0;
 
 
 	size = sprintf(reinterpret_cast<char*>(data),Txt);
-	HAL_UART_Transmit(&huart3, data, size, HAL_MAX_DELAY);
+	HAL_UART_Transmit(&huart2, data, size, HAL_MAX_DELAY);
 
 }
 

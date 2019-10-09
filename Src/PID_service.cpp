@@ -6,15 +6,16 @@
  */
 
 #include "PID_service.hpp"
+#include "main.h"
 
 float PIDControl = 1;
-uint8_t Set_VoltageME;
 
 PID::PID(float time_, float Kp_, float Ki_, float Kd_)
 :time(time_),Kp(Kp_),Ki(Ki_),Kd(Kd_){
 
+	Set_Voltage = 4.6;
 	ErrorSum = 0;
-	max = 50;
+	max = 60;
 	min = 0;
 
 
@@ -26,9 +27,8 @@ PID::~PID(){
 }
 
 
-float PID::PID_Control(float Set_Voltage, float Voltage){
+float PID::PID_Control(float Voltage){
 
-	Set_VoltageME = 5;
 	float Error = (Set_Voltage - Voltage);
 
 
@@ -61,12 +61,13 @@ float PID::PID_Control(float Set_Voltage, float Voltage){
 
 }
 
-void PID::PID_Set(float Set_Voltage,float Kup, float Kui, float Kud, float time_in){
+void PID::PID_Set(float Set_Voltage_,float Kup, float Kui, float Kud){
 
+	Set_Voltage = Set_Voltage_;
 	Kp = Kup;
 	Ki = Kui;
 	Kd = Kud;
-	time = time_in;
+
 
 }
 

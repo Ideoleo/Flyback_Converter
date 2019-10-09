@@ -60,7 +60,7 @@
 /* Variables */
 //#undef errno
 extern int errno;
-extern int __io_putchar(int ch) __attribute__((weak));
+extern int putCharacter(int ch);
 extern int __io_getchar(void) __attribute__((weak));
 
 register char * stack_ptr asm("sp");
@@ -109,7 +109,7 @@ __attribute__((weak)) int _write(int file, char *ptr, int len)
 
 	for (DataIdx = 0; DataIdx < len; DataIdx++)
 	{
-		__io_putchar(*ptr++);
+		putCharacter(*ptr++);
 	}
 	return len;
 }
