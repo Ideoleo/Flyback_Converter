@@ -52,8 +52,6 @@ void UartCom::UART_Build_String(){
 			vec_data = UART_Tok(DataToSend, " ");	//podziel na tokeny
 
 			if(vec_data->size() > 0){
-
-
 					it = Command_map.find((*vec_data)[0]);
 
 					if(it != Command_map.end()){
@@ -69,9 +67,6 @@ void UartCom::UART_Build_String(){
 						printf("\n\r");
 
 					}
-
-
-
 				}
 
 			delete vec_data;
@@ -103,7 +98,6 @@ std::vector<std::string>* UartCom::UART_Tok(char* MEMDataToSend, const char* con
 
 
 	while(WordToFind != NULL){
-
 		string temp(WordToFind,4);
 		vdata->push_back (temp);
 		WordToFind = strtok(NULL,StrFind);

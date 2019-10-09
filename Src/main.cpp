@@ -219,7 +219,6 @@ int main(void)
 
  HAL_UART_Receive_IT(&huart2, &ReceivedData, 1);
 
-
   /* USER CODE END 2 */
 
   /* USER CODE BEGIN RTOS_MUTEX */

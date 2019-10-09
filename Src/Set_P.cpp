@@ -23,9 +23,6 @@ SetP::~SetP(){
 
 
 std::string SetP::Execute(const std::vector<std::string>& vdata){
-
-
-
 	if(vdata.size() >= 5)
 	{
 
@@ -37,7 +34,6 @@ std::string SetP::Execute(const std::vector<std::string>& vdata){
 
 		printf("\n\n\rSet Voltage: %.2f\n\rKp: %.2f\n\rKi: %.2f\n\rKd: %.2f\n\r",SetVoltage,Kp,Ki,Kd);
 		printf("\n\r");
-
 		p_pid -> PID_Set(SetVoltage, Kp, Ki, Kd);
 	}
 
