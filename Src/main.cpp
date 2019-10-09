@@ -249,7 +249,7 @@ int main(void)
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* definition and creation of Console_service */
-  osThreadDef(Console_service, Console_service_start, osPriorityNormal, 0, 256);                  ///UART_Class_RUN
+  osThreadDef(Console_service, Console_service_start, osPriorityNormal, 0, 2*256);                  ///UART_Class_RUN
   Console_serviceHandle = osThreadCreate(osThread(Console_service), NULL);
 
   /* definition and creation of ADC_service */

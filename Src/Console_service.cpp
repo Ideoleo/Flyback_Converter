@@ -57,6 +57,7 @@ void UartCom::UART_Build_String(){
 					if(it != Command_map.end()){
 
 							Output = it->second->Execute(*vec_data);
+							printf("%s\n\r",Output.c_str());
 
 
 
