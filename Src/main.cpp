@@ -35,7 +35,9 @@
 #include "Console_service.hpp"
 #include "PID_service.hpp"
 #include "Set_P.hpp"
+#include "Get_P.hpp"
 #include <stdio.h>
+
 
 
 /* USER CODE END Includes */
@@ -173,6 +175,7 @@ int main(void)
 
 	Command_map = new std::map<string,CommandInterface*>;
 	Command_map->insert(std::pair<string,CommandInterface*>("SetP",new SetP(pid)));
+	Command_map->insert(std::pair<string,CommandInterface*>("GetP",new GetP()));
 	uart = new UartCom(13,*Command_map);
 
 
