@@ -172,10 +172,10 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
 
-
+	SetP* set_p = new SetP(pid);
 	Command_map = new std::map<string,CommandInterface*>;
-	Command_map->insert(std::pair<string,CommandInterface*>("SetP",new SetP(pid)));
-	Command_map->insert(std::pair<string,CommandInterface*>("GetP",new GetP()));
+	Command_map->insert(std::pair<string,CommandInterface*>("SetP",set_p));
+	Command_map->insert(std::pair<string,CommandInterface*>("GetP",new GetP(set_p->Set_To_Get())));
 	uart = new UartCom(13,*Command_map);
 
 
@@ -252,7 +252,7 @@ int main(void)
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* definition and creation of Console_service */
-  osThreadDef(Console_service, Console_service_start, osPriorityNormal, 0, 2*256);                  ///UART_Class_RUN
+  osThreadDef(Console_service, Console_service_start, osPriorityNormal, 0, 3*256);                  ///UART_Class_RUN
   Console_serviceHandle = osThreadCreate(osThread(Console_service), NULL);
 
   /* definition and creation of ADC_service */

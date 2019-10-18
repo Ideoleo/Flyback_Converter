@@ -21,14 +21,14 @@ class GetP : public CommandInterface{
 
 public:
 
-	GetP();
+	GetP(std::string);
 	~GetP();
 	virtual std::string Execute(const std::vector<std::string>&);
 
 
 private:
 
-
+	std::string Str;
 
 
 };

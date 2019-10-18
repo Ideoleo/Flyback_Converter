@@ -23,6 +23,7 @@ public:
 	SetP(PID* const);
 	virtual ~SetP();
 	virtual std::string Execute(const std::vector<std::string>&);
+	std::string Set_To_Get();
 
 
 private:

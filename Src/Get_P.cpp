@@ -10,7 +10,8 @@
 
 
 
-GetP::GetP(){
+GetP::GetP(std::string Str_):
+Str(Str_){
 
 
 }
@@ -22,7 +23,5 @@ GetP::~GetP(){
 
 std::string GetP::Execute(const std::vector<std::string>& vdata){
 
-
-
-
+return(Str);
 }

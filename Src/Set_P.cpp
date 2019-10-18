@@ -49,6 +49,14 @@ std::string SetP::Execute(const std::vector<std::string>& vdata){
 		return("\n\rNot enough arguments\n\r");
 
 	}
+}
 
+std::string SetP::Set_To_Get(){
+
+	char buffer[100] = {};
+	snprintf(buffer,100,"\n\n\rSet Voltage: %.2f\n\rKp: %.2f\n\rKi: %.2f\n\rKd: %.2f\n\r",SetVoltage,Kp,Ki,Kd);
+	return std::string(buffer);
 
 }
+
+
