@@ -8,15 +8,16 @@
 #include "PID_service.hpp"
 #include "main.h"
 
-float PIDControl = 1;
+float PIDControl;
 
 PID::PID(float time_, float Kp_, float Ki_, float Kd_)
 :time(time_),Kp(Kp_),Ki(Ki_),Kd(Kd_){
 
-	Set_Voltage = 4.6;
+	Set_Voltage = 5;
 	ErrorSum = 0;
-	max = 60;
+	max = 192;
 	min = 0;
+	time_d = 0.003;
 
 
 }
@@ -39,13 +40,15 @@ float PID::PID_Control(float Voltage){
 
 	if((PIDControl > min) && (PIDControl < max)){
 
-	ErrorSum = ErrorSum + (Error*time);
+	ErrorSum += Error*time;
 	Integral = Ki * ErrorSum;
 
 	}
 
 	//------------D-------------//
-	Derivative = Kd * ((Error - PreError)/time);
+
+	Derivative = Kd * ((Error - PreError)/time_d);
+
 
 	PIDControl = Proportional + Integral + Derivative;
 
@@ -53,9 +56,10 @@ float PID::PID_Control(float Voltage){
 			PIDControl = max;
 
 	else if(PIDControl < min)
-			PIDControl = min;
+			PIDControl = min + 1;
 
 	PreError = Error;
+
 
 	return PIDControl;
 

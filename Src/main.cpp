@@ -95,9 +95,9 @@ osMessageQId Console_RxHandle;
 
 uint8_t ReceivedData; // Tablica przechowujaca odebrane dane
 uint8_t Data_To_Send[50];
-uint16_t cnt = 0;
 uint32_t PID_UART;
 float ADC_UART;
+uint8_t cnt = 0;
 
 
 /* Deklaracja objektow -------------------------------------------------------*/
@@ -105,7 +105,7 @@ float ADC_UART;
 AnalogOutInterface* pwm = new PWMConf(&htim4);
 ADCConf* adc = new ADCConf(pwm);
 UartCom* uart = NULL;
-PID* pid = new PID(0.001,1,50,0);
+PID* pid = new PID(0.01,10,23.8,0);
 std::map<string,CommandInterface*>* Command_map;
 
 
@@ -138,7 +138,7 @@ int PWM_Change();
 
 
 
-// Przerwanie_ADC - start pomiaru za pomoca Timera 3 - 10 kHz
+// Przerwanie_ADC - start pomiaru za pomoca Timera 3 - 100 kHz
  void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc1) {
 
 	adc-> ADC_Push(HAL_ADC_GetValue(hadc1));
@@ -248,15 +248,15 @@ int main(void)
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 256);
+  osThreadDef(defaultTask, StartDefaultTask, osPriorityBelowNormal, 0, 256);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* definition and creation of Console_service */
-  osThreadDef(Console_service, Console_service_start, osPriorityNormal, 0, 2*256);                  ///UART_Class_RUN
+  osThreadDef(Console_service, Console_service_start, osPriorityBelowNormal, 0, 2*256);                  ///UART_Class_RUN
   Console_serviceHandle = osThreadCreate(osThread(Console_service), NULL);
 
   /* definition and creation of ADC_service */
-  osThreadDef(ADC_service, ADC_service_start, osPriorityBelowNormal, 0, 256);				//ADC_Print
+  osThreadDef(ADC_service, ADC_service_start, osPriorityNormal, 0, 256);				//ADC_Print
   ADC_serviceHandle = osThreadCreate(osThread(ADC_service), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
@@ -289,6 +289,7 @@ int main(void)
   * @brief System Clock Configuration
   * @retval None
   */
+
 void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
@@ -301,13 +302,13 @@ void SystemClock_Config(void)
   /** Initializes the CPU, AHB and APB busses clocks 
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = 4;
-  RCC_OscInitStruct.PLL.PLLN = 96;
-  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV6;
-  RCC_OscInitStruct.PLL.PLLQ = 4;
+    RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+    RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+    RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+    RCC_OscInitStruct.PLL.PLLM = 4;
+    RCC_OscInitStruct.PLL.PLLN = 192;
+    RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV6;
+    RCC_OscInitStruct.PLL.PLLQ = 8;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -318,7 +319,7 @@ void SystemClock_Config(void)
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK)
@@ -364,7 +365,7 @@ static void MX_ADC1_Init(void)
   }
   /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
   */
-  sConfig.Channel = ADC_CHANNEL_1;
+  sConfig.Channel = ADC_CHANNEL_0;
   sConfig.Rank = 1;
   sConfig.SamplingTime = ADC_SAMPLETIME_480CYCLES;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
@@ -468,9 +469,9 @@ static void MX_TIM3_Init(void)
 
   /* USER CODE END TIM3_Init 1 */
   htim3.Instance = TIM3;
-  htim3.Init.Prescaler = 99;
+  htim3.Init.Prescaler = 999;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 16;
+  htim3.Init.Period = 31;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
@@ -514,9 +515,9 @@ static void MX_TIM4_Init(void)
 
   /* USER CODE END TIM4_Init 1 */
   htim4.Instance = TIM4;
-  htim4.Init.Prescaler = 2;
+  htim4.Init.Prescaler = 1;
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim4.Init.Period = 100;
+  htim4.Init.Period = 319;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
@@ -668,10 +669,10 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(PDM_OUT_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : Button_Pin */
-  GPIO_InitStruct.Pin = Button_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(Button_GPIO_Port, &GPIO_InitStruct);
+  //GPIO_InitStruct.Pin = Button_Pin;
+  //GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  //GPIO_InitStruct.Pull = GPIO_NOPULL;
+  //HAL_GPIO_Init(Button_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : I2S3_WS_Pin */
   GPIO_InitStruct.Pin = I2S3_WS_Pin;
@@ -822,6 +823,7 @@ void ADC_service_start(void const * argument)
 	 adc -> ADC_Send_PWM(PID_UART);
 
 	 osDelay(1);
+
 
 	}
 

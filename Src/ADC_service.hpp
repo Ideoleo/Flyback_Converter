@@ -40,6 +40,9 @@ private:
 	 uint8_t Vcc_Voltage;
 	 uint16_t Max_Bit_Value;
 	 AnalogOutInterface* const wsk;
+	 uint32_t cnt_in;
+	 uint32_t cnt_out;
+	 uint32_t cnt_err;
 
 
 

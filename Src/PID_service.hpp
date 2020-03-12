@@ -29,13 +29,15 @@ private:
 
 
 	float time;
+	float time_d;
+	float time_i;
 	float max;
 	float min;
 	float Kp, Ki, Kd;
 	float Proportional,Integral,Derivative;
 	float PreError;
 	float Set_Voltage;
-	double ErrorSum;
+	float ErrorSum;
 
 };
 

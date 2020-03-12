@@ -76,9 +76,6 @@ void vApplicationIdleHook(void);
 #define OTG_FS_PowerSwitchOn_GPIO_Port GPIOC
 #define PDM_OUT_Pin GPIO_PIN_3
 #define PDM_OUT_GPIO_Port GPIOC
-#define Button_Pin GPIO_PIN_0
-#define Button_GPIO_Port GPIOA
-#define Button_EXTI_IRQn EXTI0_IRQn
 #define I2S3_WS_Pin GPIO_PIN_4
 #define I2S3_WS_GPIO_Port GPIOA
 #define SPI1_SCK_Pin GPIO_PIN_5
